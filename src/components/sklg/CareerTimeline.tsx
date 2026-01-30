@@ -1,4 +1,4 @@
-import { Check, Circle, Lock, Navigation2 } from "lucide-react";
+import { Check, Circle, Navigation2, Route, RefreshCw, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Milestone {
@@ -6,6 +6,7 @@ interface Milestone {
   title: string;
   description: string;
   status: "completed" | "active" | "upcoming";
+  alternativeCount?: number;
 }
 
 const milestones: Milestone[] = [
@@ -20,12 +21,14 @@ const milestones: Milestone[] = [
     title: "Entrance Exams",
     description: "Prepare and appear for JEE/NEET/other competitive exams",
     status: "active",
+    alternativeCount: 2,
   },
   {
     id: 3,
     title: "Certifications",
     description: "Earn industry-recognized certifications",
     status: "upcoming",
+    alternativeCount: 3,
   },
   {
     id: 4,
@@ -56,7 +59,7 @@ const MilestoneNode = ({ milestone, index }: { milestone: Milestone; index: numb
           "relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 cursor-pointer",
           isCompleted && "bg-accent/20 border-2 border-accent glow-green",
           isActive && "bg-primary/20 border-2 border-primary animate-pulse-glow",
-          !isCompleted && !isActive && "bg-muted/50 border-2 border-muted-foreground/30"
+          !isCompleted && !isActive && "bg-muted/30 border-2 border-primary/30 hover:border-primary/60 hover:bg-primary/10"
         )}
       >
         {isCompleted ? (
@@ -64,14 +67,24 @@ const MilestoneNode = ({ milestone, index }: { milestone: Milestone; index: numb
         ) : isActive ? (
           <Navigation2 className="w-7 h-7 text-primary" />
         ) : (
-          <Lock className="w-5 h-5 text-muted-foreground/50" />
+          <Circle className="w-5 h-5 text-primary/50" />
         )}
 
         {/* Active indicator */}
         {isActive && (
           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
-            <span className="text-xs text-primary font-medium px-2 py-1 rounded-full bg-primary/10 whitespace-nowrap">
+            <span className="text-xs text-primary font-medium px-2 py-1 rounded-full bg-primary/10 whitespace-nowrap flex items-center gap-1">
+              <Navigation2 className="w-3 h-3" />
               You are here
+            </span>
+          </div>
+        )}
+
+        {/* Alternative routes indicator */}
+        {milestone.alternativeCount && !isCompleted && (
+          <div className="absolute -top-2 -right-2">
+            <span className="text-[10px] w-5 h-5 rounded-full bg-secondary/80 text-secondary-foreground flex items-center justify-center font-medium">
+              +{milestone.alternativeCount}
             </span>
           </div>
         )}
@@ -84,7 +97,7 @@ const MilestoneNode = ({ milestone, index }: { milestone: Milestone; index: numb
             "font-semibold text-sm mb-1 transition-colors",
             isCompleted && "text-accent",
             isActive && "text-primary",
-            !isCompleted && !isActive && "text-muted-foreground"
+            !isCompleted && !isActive && "text-foreground/80"
           )}
         >
           {milestone.title}
@@ -99,17 +112,12 @@ const MilestoneNode = ({ milestone, index }: { milestone: Milestone; index: numb
         <div className="glass-card rounded-lg p-3 min-w-[180px]">
           <p className="text-xs text-foreground font-medium mb-1">{milestone.title}</p>
           <p className="text-xs text-muted-foreground">{milestone.description}</p>
-          <div className="mt-2 flex items-center gap-1">
-            <Circle className={cn(
-              "w-2 h-2",
-              isCompleted && "fill-accent text-accent",
-              isActive && "fill-primary text-primary",
-              !isCompleted && !isActive && "fill-muted text-muted"
-            )} />
-            <span className="text-[10px] text-muted-foreground capitalize">
-              {milestone.status}
-            </span>
-          </div>
+          {milestone.alternativeCount && (
+            <p className="text-[10px] text-secondary mt-2 flex items-center gap-1">
+              <Route className="w-3 h-3" />
+              {milestone.alternativeCount} alternative routes available
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -121,7 +129,7 @@ const CareerTimeline = () => {
     <section className="py-20 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-6">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Your Career <span className="text-gradient">Roadmap</span>
           </h2>
@@ -129,6 +137,14 @@ const CareerTimeline = () => {
             Follow your personalized path with clear milestones. We'll guide you through each step 
             and re-route when needed.
           </p>
+        </div>
+
+        {/* Route Label */}
+        <div className="flex items-center justify-center gap-2 mb-12">
+          <div className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
+            <Route className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">Current Recommended Route to Your Career Goal</span>
+          </div>
         </div>
 
         {/* Timeline */}
@@ -142,6 +158,14 @@ const CareerTimeline = () => {
             style={{ width: "30%" }}
           />
 
+          {/* Directional arrows on route */}
+          <div className="absolute top-[26px] left-[15%] hidden md:flex items-center gap-16 text-primary/30">
+            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" />
+          </div>
+
           {/* Milestone Nodes */}
           <div className="flex flex-col md:flex-row md:justify-between gap-12 md:gap-4 relative">
             {milestones.map((milestone, index) => (
@@ -150,8 +174,21 @@ const CareerTimeline = () => {
           </div>
         </div>
 
+        {/* Re-routing & Alternative Routes Info */}
+        <div className="mt-16 flex flex-col md:flex-row items-center justify-center gap-6 text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <RefreshCw className="w-4 h-4 text-secondary" />
+            <span>Route updates automatically based on your progress</span>
+          </div>
+          <div className="hidden md:block w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Route className="w-4 h-4 text-secondary" />
+            <span>Alternative paths available at key decision points</span>
+          </div>
+        </div>
+
         {/* Progress Stats */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Completed", value: "1", color: "text-accent" },
             { label: "In Progress", value: "1", color: "text-primary" },
