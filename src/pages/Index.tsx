@@ -1,12 +1,12 @@
 import HeroSection from "@/components/sklg/HeroSection";
-import CareerTimeline from "@/components/sklg/CareerTimeline";
+import CareerNavigationMap from "@/components/sklg/CareerNavigationMap";
 import CollegeRecommendations from "@/components/sklg/CollegeRecommendations";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <HeroSection />
-      <CareerTimeline />
+      <CareerNavigationMap />
       <CollegeRecommendations />
       
       {/* Footer */}
